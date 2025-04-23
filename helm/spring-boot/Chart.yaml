@@ -1,0 +1,9 @@
+apiVersion: v2
+name: todo-app
+version: 0.1.0
+appVersion: "1.0.0"
+description: A Helm chart for Kubernetes deployment of Spring Boot Todo App
+maintainers:
+  - name: alice.b9
+    email: su9581@gmail.com
+type: application
