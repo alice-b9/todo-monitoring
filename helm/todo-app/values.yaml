@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: todo-app
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+prometheus:
+  server:
+    service:
+      type: NodePort
+      nodePort: 30090
+  prometheusSpec:
+    scrapeInterval: 15s
+    additionalScrapeConfigs:
+      - job_name: 'todo-app'
+        metrics_path: '/actuator/prometheus'
+        static_configs:
+          - targets: ['todo-app:8080']
+
+grafana:
+  service:
+    type: NodePort
+    nodePort: 30030
+  adminUser: admin
+  adminPassword: admin
