@@ -50,6 +50,29 @@ grafana:
   adminUser: admin
   adminPassword: admin
 
+tempo:
+  enabled: true
+  mode: deployment
+  service:
+    enabled: true
+    ports:
+      - name: grpc
+        port: 4317
+      - name: http
+        port: 4318
+      - name: tempo
+        port: 3200
+  persistence:
+    enabled: false
+  config: |
+    server:
+      http_listen_port: 3200
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /tmp/tempo
+
 opentelemetry-collector:
   enabled: true
   mode: deployment
@@ -57,6 +80,11 @@ opentelemetry-collector:
     enabled: true
     type: NodePort
   config:
+    exporters:
+      otlp/grafana-tempo:
+        endpoint: tempo:4317
+        tls:
+          insecure: true
     service:
       pipelines:
         logs:
@@ -67,4 +95,4 @@ opentelemetry-collector:
           exporters: [debug]
         traces:
           receivers: [otlp]
-          exporters: [debug]
+          exporters: [debug, otlp/grafana-tempo]
