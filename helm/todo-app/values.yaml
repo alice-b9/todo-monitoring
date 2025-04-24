@@ -9,6 +9,12 @@ service:
   type: ClusterIP
   port: 8080
 
+env:
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: http://todo-app-otel-collector:4318
+  - name: OTEL_SERVICE_NAME
+    value: "todo-app"
+
 resources:
   limits:
     cpu: 500m
@@ -43,3 +49,22 @@ grafana:
     nodePort: 30030
   adminUser: admin
   adminPassword: admin
+
+opentelemetry-collector:
+  enabled: true
+  mode: deployment
+  service:
+    enabled: true
+    type: NodePort
+  config:
+    service:
+      pipelines:
+        logs:
+          receivers: [otlp]
+          exporters: [debug]
+        metrics:
+          receivers: [otlp]
+          exporters: [debug]
+        traces:
+          receivers: [otlp]
+          exporters: [debug]
