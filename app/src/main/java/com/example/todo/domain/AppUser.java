@@ -10,23 +10,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-@Table(name="todo")
-public class Todo {
+@Table(name="app_user")
+public class AppUser {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
-    private String title;
-    private boolean completed;
+    private String password;
+    private String role;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     @PrePersist
     public void onInsert() {
         createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        updatedAt = LocalDateTime.now();
     }
 }
