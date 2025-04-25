@@ -42,22 +42,6 @@ tempo:
   fullnameOverride: "tempo"
   enabled: true
   mode: deployment
-  tempo:
-    receivers:
-      otlp:
-        protocols:
-          grpc:
-            endpoint: 0.0.0.0:14317
-          http:
-            endpoint: 0.0.0.0:14318
-  service:
-    ports:
-      - name: grpc
-        port: 14317
-        targetPort: grpc
-      - name: http
-        port: 14318
-        targetPort: http
   persistence:
     enabled: false
 
@@ -70,7 +54,7 @@ opentelemetry-collector:
       debug:
         verbosity: detailed
       otlp/grafana-tempo:
-        endpoint: tempo:14317
+        endpoint: tempo:4317
         tls:
           insecure: true
     service:
