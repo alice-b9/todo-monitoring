@@ -8,9 +8,6 @@ maintainers:
     email: su9581@gmail.com
 type: application
 dependencies:
-  - name: prometheus
-    version: "25.7.0"
-    repository: https://prometheus-community.github.io/helm-charts
   - name: grafana
     version: "7.3.0"
     repository: https://grafana.github.io/helm-charts

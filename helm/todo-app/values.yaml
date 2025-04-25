@@ -11,7 +11,7 @@ service:
 
 env:
   - name: OTEL_EXPORTER_OTLP_ENDPOINT
-    value: http://todo-app-otel-collector:4318
+    value: http://opentelemetry-collector:4317
   - name: OTEL_SERVICE_NAME
     value: "todo-app"
 
@@ -30,20 +30,8 @@ livenessProbe:
   initialDelaySeconds: 30
   periodSeconds: 10
 
-prometheus:
-  server:
-    service:
-      type: NodePort
-      nodePort: 30090
-  prometheusSpec:
-    scrapeInterval: 15s
-    additionalScrapeConfigs:
-      - job_name: 'todo-app'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-          - targets: ['todo-app:8080']
-
 grafana:
+  fullnameOverride: "grafana"
   service:
     type: NodePort
     nodePort: 30030
@@ -51,38 +39,38 @@ grafana:
   adminPassword: admin
 
 tempo:
+  fullnameOverride: "tempo"
   enabled: true
   mode: deployment
+  tempo:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14317
+          http:
+            endpoint: 0.0.0.0:14318
   service:
-    enabled: true
     ports:
       - name: grpc
-        port: 4317
+        port: 14317
+        targetPort: grpc
       - name: http
-        port: 4318
-      - name: tempo
-        port: 3200
+        port: 14318
+        targetPort: http
   persistence:
     enabled: false
-  config: |
-    server:
-      http_listen_port: 3200
-    storage:
-      trace:
-        backend: local
-        local:
-          path: /tmp/tempo
 
 opentelemetry-collector:
+  fullnameOverride: "opentelemetry-collector"
   enabled: true
   mode: deployment
-  service:
-    enabled: true
-    type: NodePort
   config:
     exporters:
+      debug:
+        verbosity: detailed
       otlp/grafana-tempo:
-        endpoint: tempo:4317
+        endpoint: tempo:14317
         tls:
           insecure: true
     service:
